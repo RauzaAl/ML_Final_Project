@@ -5,13 +5,15 @@ import tkinter
 
 width = 640
 height = 480
+brightness = 180
 threshold = 0.75
+font = cv2.FONT_HERSHEY_COMPLEX
 
-print("Hello world")
 
 cap = cv2.VideoCapture(0)
 cap.set(3,width)
 cap.set(4,height)
+cap.set(10, brightness)
 
 pickle_in = open("model_trained.p","rb")
 model = pickle.load(pickle_in)
@@ -78,14 +80,15 @@ while True:
     classIndex = int(model.predict_classes(img))
     print(classIndex)
     predictions = model.predict(img)
+
     probVal= np.amax(predictions)
     print(classIndex,probVal)
 
     if probVal> threshold:
-        cv2.putText(imgOriginal,str(classIndex)+" " + str(getClassName(classIndex))+"   "+str(probVal),
-                    (50,50),cv2.FONT_HERSHEY_COMPLEX,
-                    1,(0,0,255),1)
-
+        cv2.putText(imgOriginal, str(classIndex) + " " + str(getClassName(classIndex)), (120, 35), font, 0.75,
+                    (0, 0, 255), 2, cv2.LINE_AA)
+        cv2.putText(imgOriginal, str(round(probVal * 100, 2)) + "%", (180, 75), font, 0.75, (0, 0, 255), 2,
+                    cv2.LINE_AA)
     cv2.imshow("Original Image",imgOriginal)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
