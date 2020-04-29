@@ -9,7 +9,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.utils.np_utils import to_categorical
 from keras import Sequential
 from keras.layers.convolutional import Conv2D, MaxPooling2D
-from keras.layers import Dropout, Flatten, Dense
+from keras.layers import Dropout, Flatten, Dense, BatchNormalization
 from keras.optimizers import Adam
 import pickle
 path = 'Train'
@@ -83,34 +83,26 @@ y_train = to_categorical(y_train, noOfCLasses)
 y_test = to_categorical(y_test, noOfCLasses)
 y_validation = to_categorical(y_validation, noOfCLasses)
 
-def myModel():
-    noOfFilters = 60
-    sizeOfFilter1 = (5,5)
-    sizeOfFilter2 = (3,3)
-    sizeOfPool = (2,2)
-    noOfNode = 500
 
-    model = Sequential()
-    model.add((Conv2D(noOfFilters, sizeOfFilter1, input_shape=(imageDimensions[0],
-                                                               imageDimensions[1], 1), activation= 'relu')))
 
-    model.add((Conv2D(noOfFilters, sizeOfFilter1, activation='relu')))
-    model.add(MaxPooling2D(pool_size=sizeOfPool))
-    model.add((Conv2D(noOfFilters//2, sizeOfFilter2, activation='relu')))
-    model.add((Conv2D(noOfFilters//2, sizeOfFilter2, activation= 'relu')))
-    model.add(MaxPooling2D(pool_size=sizeOfPool))
-    model.add(Dropout(0.5))
 
-    model.add(Flatten())
-    model.add(Dense(noOfNode, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(noOfCLasses, activation='softmax'))
-    model.compile(Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
 
-model = myModel()
+model = Sequential()
+model.add((Conv2D(60, (5,5), input_shape=(32,32, 1), activation= 'relu')))
+model.add((Conv2D(60, (5,5), activation='relu')))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add((Conv2D(60//2, (3,3), activation='relu')))
+model.add((Conv2D(60//2, (3,3), activation= 'relu')))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Flatten())
+model.add(Dense(500, activation='relu'))
+model.add(Dense(43, activation='softmax'))
+model.compile(Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+
+
 print(model.summary())
-epochVal = 10
+epochVal = 1
 stepsPerEpoch = 2000
 history = model.fit_generator(dataGen.flow(X_train,y_train,
                                  batch_size=50), steps_per_epoch=stepsPerEpoch, epochs=epochVal,
