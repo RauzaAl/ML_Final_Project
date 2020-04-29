@@ -102,7 +102,7 @@ model.compile(Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accurac
 
 
 print(model.summary())
-epochVal = 1
+epochVal = 10
 stepsPerEpoch = 2000
 history = model.fit_generator(dataGen.flow(X_train,y_train,
                                  batch_size=50), steps_per_epoch=stepsPerEpoch, epochs=epochVal,
